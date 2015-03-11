@@ -1,0 +1,19 @@
+{
+  "name": "reddit-stats-server",
+  "version": "0.0.1",
+  "description": "Provide reddit statistical data based on search queries",
+  "main": "server.js",
+  "scripts": {},
+  "keywords": [
+    "reddit",
+    "stats",
+    "api"
+  ],
+  "author": "Thomas Dashney <tdashney@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^1.12.0",
+    "express": "^4.12.2",
+    "request": "^2.53.0"
+  }
+}
