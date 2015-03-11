@@ -55,8 +55,6 @@ app.get('/get_data', function(req, res) {
     }
   }, function(err, response, body) {
     var data = JSON.parse(body).data;
-    // set number of posts to children
-    result.number_of_posts = data.children.length;
     if (!data.children)
       return res.send({
         message: 'no results'
@@ -65,7 +63,11 @@ app.get('/get_data', function(req, res) {
       result.score += obj.data.score;
       result.number_of_comments += obj.data.num_comments;
     });
-    res.json(result);
+    // set number of posts to children
+    result.number_of_posts = data.children.length;
+    if (result.number_of_posts === 100)
+      result.number_of_posts += '+';
+    return res.json(result);
   });
 });
 
