@@ -1,5 +1,8 @@
 var express = require('express');
 var request = require('request');
+var async   = require('async');
+var config  = require('config');
+var _       = require('lodash');
 var app     = express();
 
 var baseUrl = 'https://www.reddit.com';
@@ -25,7 +28,45 @@ app.get('/', function(req, res) {
  * @return {[type]}      [description]
  */
 app.get('/get_data', function(req, res) {
+  if (!req.query.subreddit)
+    return res.status(400).send('No subreddit provided in query string');
+  if (!req.query.q)
+    return res.status(400).send('No q string provided');
+  if (!req.query.q.length >= 512)
+    return res.status(400).send('q must be smaller than 512 characters');
 
+  // results object to be populated
+  var result = {
+    number_of_posts: 0,
+    score: 0,
+    number_of_comments: 0
+  };
+
+  var url = baseUrl+'/r/'+encodeURIComponent(req.query.subreddit)+'/search.json';
+  request({
+    url: url,
+    useQuerystring:true,
+    qs: {
+      access_token: config.redditApiKey,
+      q: req.query.q,
+      limit: 100,
+      restrict_sr: true,
+      t: 'month'
+    }
+  }, function(err, response, body) {
+    var data = JSON.parse(body).data;
+    // set number of posts to children
+    result.number_of_posts = data.children.length;
+    if (!data.children)
+      return res.send({
+        message: 'no results'
+      });
+    _.forEach(data.children, function(obj, key) {
+      result.score += obj.data.score;
+      result.number_of_comments += obj.data.num_comments;
+    });
+    res.json(result);
+  });
 });
 
 /**
