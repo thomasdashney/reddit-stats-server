@@ -1,0 +1,5 @@
+{
+  "name": "Reddit Stats Server",
+  "description": "A simple reddit stats server for fetching stats based on keyword search in a subreddit",
+  "keywords": ["reddit", "stats", "api"]
+}
