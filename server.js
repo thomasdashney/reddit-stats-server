@@ -52,7 +52,7 @@ app.get('/get_data', function(req, res) {
       limit: 100,
       restrict_sr: true,
       t: 'month',
-      sort: top
+      sort: 'top'
     }
   }, function(err, response, body) {
     var data = JSON.parse(body).data;
