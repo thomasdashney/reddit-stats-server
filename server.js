@@ -65,6 +65,7 @@ app.get('/get_data', function(req, res) {
       result.number_of_comments += obj.data.num_comments;
     });
     // set number of posts to children
+    result.number_of_posts = data.children.length;
     return res.json(result);
   });
 });
