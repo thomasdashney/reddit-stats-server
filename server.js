@@ -51,7 +51,8 @@ app.get('/get_data', function(req, res) {
       q: req.query.q,
       limit: 100,
       restrict_sr: true,
-      t: 'month'
+      t: 'month',
+      sort: top
     }
   }, function(err, response, body) {
     var data = JSON.parse(body).data;
@@ -67,6 +68,10 @@ app.get('/get_data', function(req, res) {
     result.number_of_posts = data.children.length;
     if (result.number_of_posts === 100)
       result.number_of_posts += '+';
+    if (result.score === 100)
+      result.score += '+';
+    if (result.number_of_comments === 100)
+      result.number_of_comments += '+';
     return res.json(result);
   });
 });
