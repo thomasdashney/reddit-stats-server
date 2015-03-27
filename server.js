@@ -43,7 +43,7 @@ app.get('/', function(req, res) {
  * @return {[type]}      [description]
  */
 app.get('/get_data2', function(req, res) {
-  if (!req.query.sub1 && !req.query.sub2 || !req.query.sub3 || !req.query.sub4)
+  if (!req.query.sub1 && !req.query.sub2 && !req.query.sub3 && !req.query.sub4)
     return res.status(400).send('No subreddits provided');
   if (!req.query.q)
     return res.status(400).send('No q string provided');
