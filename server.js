@@ -94,12 +94,15 @@ app.get('/get_data2', function(req, res) {
       });
       // set number of posts to children
       result.number_of_posts = data.children.length;
-      var wrapper = {};
-      wrapper[subreddit] = result;
-      cb(null, wrapper);
+      cb(null, result);
     });
   }, function returnResponse(err, results) {
-    return res.json(results);
+    // normalize
+    var response = {};
+    for (var i = 0; i < subreddits.length; i++){
+      response[subreddits[i]] = results[i];
+    };
+    return res.json(response);
   });
 });
 
