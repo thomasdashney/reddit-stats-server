@@ -62,40 +62,56 @@ app.get('/get_data2', function(req, res) {
     subreddits.push(req.query.sub4);
 
   async.map(subreddits, function getData(subreddit, cb) {
-
-    // results object to be populated
-    var result = {
-      number_of_posts: 0,
-      score: 0,
-      number_of_comments: 0
-    };
-
-    var url = baseUrl+'/r/'+encodeURIComponent(subreddit)+'/search.json';
-    request({
-      url: url,
-      useQuerystring:true,
-      qs: {
-        access_token: config.redditApiKey,
-        q: req.query.q,
-        limit: 100,
-        restrict_sr: true,
-        t: 'all',
-        sort: 'top'
-      }
-    }, function(err, response, body) {
-      var data = JSON.parse(body).data;
-      if (!data.children)
-        return res.send({
-          message: 'no results'
+    // in parallel, get the number of subscribers and the search query
+    async.parallel({
+      numSubscribers: function(done) {
+        // make request to /r/[subreddit]/about.json
+        var url = baseUrl+'/r/'+encodeURIComponent(subreddit)+'/about.json';
+        request(url, function(err, response, body) {
+          done(null, JSON.parse(body).data.subscribers)
         });
-      _.forEach(data.children, function(obj, key) {
-        result.score += obj.data.score;
-        result.number_of_comments += obj.data.num_comments;
-      });
-      // set number of posts to children
-      result.number_of_posts = data.children.length;
-      cb(null, result);
-    });
+      },
+      stats: function(done) {
+        // results object to be populated
+        var result = {
+          number_of_posts: 0,
+          score: 0,
+          number_of_comments: 0
+        };
+
+        var url = baseUrl+'/r/'+encodeURIComponent(subreddit)+'/search.json';
+        request({
+          url: url,
+          useQuerystring:true,
+          qs: {
+            access_token: config.redditApiKey,
+            q: req.query.q,
+            limit: 100,
+            restrict_sr: true,
+            t: 'all',
+            sort: 'top'
+          }
+        }, function(err, response, body) {
+          var data = JSON.parse(body).data;
+          if (!data.children)
+            return res.send({
+              message: 'no results'
+            });
+          _.forEach(data.children, function(obj, key) {
+            result.score += obj.data.score;
+            result.number_of_comments += obj.data.num_comments;
+          });
+          // set number of posts to children
+          result.number_of_posts = data.children.length;
+          done(null, result);
+        });
+      }
+    }, function gotData(err, results) {
+      // return back to map cb
+      results.stats.numSubscribers = results.numSubscribers;
+      cb(null, results.stats);
+    })
+
   }, function returnResponse(err, results) {
     // normalize
     var response = {};
