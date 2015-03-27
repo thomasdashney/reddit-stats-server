@@ -108,7 +108,7 @@ app.get('/get_data2', function(req, res) {
       }
     }, function gotData(err, results) {
       // return back to map cb
-      results.stats.numSubscribers = results.numSubscribers;
+      results.stats['number_of_subscribers'] = results.numSubscribers;
       cb(null, results.stats);
     })
 
