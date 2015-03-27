@@ -145,7 +145,7 @@ app.get('/get_data', function(req, res) {
       q: req.query.q,
       limit: 100,
       restrict_sr: true,
-      t: 'month',
+      t: 'all',
       sort: 'top'
     }
   }, function(err, response, body) {
